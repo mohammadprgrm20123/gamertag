@@ -1,22 +1,12 @@
 import 'package:flutter/material.dart';
-
-///iMessage's chat bubble type
-///
-///chat bubble color can be customized using [color]
-///chat bubble tail can be customized  using [tail]
-///chat bubble display message can be changed using [text]
-///[text] is the only required parameter
-///message sender can be changed using [isSender]
-///chat bubble [TextStyle] can be customized using [textStyle]
+import '../../../infrastructure/theme/app_color.dart';
 
 class MessageWidget extends StatelessWidget {
   final bool isSender;
   final String text;
   final bool tail;
-  final Color color;
-  final bool sent;
-  final bool delivered;
-  final bool seen;
+  final Color? color;
+
   final TextStyle textStyle;
   final BoxConstraints? constraints;
 
@@ -25,88 +15,49 @@ class MessageWidget extends StatelessWidget {
     this.isSender = true,
     this.constraints,
     required this.text,
-    this.color = Colors.white70,
+    this.color,
     this.tail = true,
-    this.sent = false,
-    this.delivered = false,
-    this.seen = false,
     this.textStyle = const TextStyle(
-      color: Colors.black87,
-      fontSize: 16,
+      color: Colors.white,
+      fontSize: 14,
+      fontWeight: FontWeight.w400
     ),
   });
 
   ///chat bubble builder method
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     bool stateTick = false;
     Icon? stateIcon;
-    if (sent) {
-      stateTick = true;
-      stateIcon = const Icon(
-        Icons.done,
-        size: 18,
-        color: Color(0xFF97AD8E),
-      );
-    }
-    if (delivered) {
-      stateTick = true;
-      stateIcon = const Icon(
-        Icons.done_all,
-        size: 18,
-        color: Color(0xFF97AD8E),
-      );
-    }
-    if (seen) {
-      stateTick = true;
-      stateIcon = const Icon(
-        Icons.done_all,
-        size: 18,
-        color: Color(0xFF92DEDA),
-      );
-    }
-
-    return Align(
-      alignment: isSender ? Alignment.topRight : Alignment.topLeft,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-        child: CustomPaint(
-          painter: SpecialChatBubbleThree(
-              color: color,
-              alignment: isSender ? Alignment.topRight : Alignment.topLeft,
-              tail: tail),
-          child: Container(
-            constraints: constraints ??
-                BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width * .7,
-                ),
-            margin: isSender
-                ? stateTick
-                ? const EdgeInsets.fromLTRB(7, 7, 14, 7)
-                : const EdgeInsets.fromLTRB(7, 7, 17, 7)
-                : const EdgeInsets.fromLTRB(17, 7, 7, 7),
-            child: Stack(
-              children: <Widget>[
-                Padding(
-                  padding: stateTick
-                      ? const EdgeInsets.only(left: 4, right: 20)
-                      : const EdgeInsets.only(left: 4, right: 4),
-                  child: Text(
-                    text,
-                    style: textStyle,
-                    textAlign: TextAlign.left,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Align(
+        alignment: isSender ? Alignment.topRight : Alignment.topLeft,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          child: CustomPaint(
+            painter: SpecialChatBubbleThree(color: color ?? AppColor.appBarBackground, alignment: isSender ? Alignment.topRight : Alignment.topLeft, tail: tail),
+            child: Container(
+              constraints: constraints ??
+                  BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width * .7,
                   ),
-                ),
-                stateIcon != null && stateTick
-                    ? Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: stateIcon,
-                )
-                    : const SizedBox(
-                  width: 1,
-                ),
-              ],
+              margin: isSender
+                  ? const EdgeInsets.fromLTRB(7, 7, 17, 7)
+                  : const EdgeInsets.fromLTRB(17, 7, 7, 7),
+              child: Stack(
+                children: <Widget>[
+                  Padding(
+                    padding: stateTick ? const EdgeInsets.only(left: 4, right: 20) : const EdgeInsets.only(left: 4, right: 4),
+                    child: Text(
+                      text,
+                      style: !isSender ? textStyle.copyWith(color: Colors.black) : textStyle,
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+
+                ],
+              ),
             ),
           ),
         ),
@@ -133,12 +84,12 @@ class SpecialChatBubbleThree extends CustomPainter {
   final double _radius = 12.0;
 
   @override
-  void paint(Canvas canvas, Size size) {
-    var h = size.height;
-    var w = size.width;
+  void paint(final Canvas canvas, final Size size) {
+    final h = size.height;
+    final w = size.width;
     if (alignment == Alignment.topRight) {
       if (tail) {
-        var path = Path();
+        final path = Path();
 
         /// starting point
         path.moveTo(_radius * 2, 0);
@@ -156,15 +107,13 @@ class SpecialChatBubbleThree extends CustomPainter {
         path.lineTo(w - _radius * 3, h);
 
         /// bottom-right bubble curve
-        path.quadraticBezierTo(
-            w - _radius * 1, h, w - _radius * 1.5, h - _radius * 0.8);
+        path.quadraticBezierTo(w - _radius * 1, h, w - _radius * 1.5, h - _radius * 0.8);
 
         /// bottom-right tail curve 1
-        path.quadraticBezierTo(w -4- _radius * 1, h, w-5, h);
+        path.quadraticBezierTo(w - 4 - _radius * 1, h, w - 5, h);
 
         /// bottom-right tail curve 2
-        path.quadraticBezierTo(
-            w - _radius * .7, h, w - _radius, h - _radius * 1.2);
+        path.quadraticBezierTo(w - _radius * .7, h, w - _radius, h - _radius * 1.2);
 
         /// right line
         path.lineTo(w - _radius, _radius * 1.5);
@@ -179,7 +128,7 @@ class SpecialChatBubbleThree extends CustomPainter {
               ..color = color
               ..style = PaintingStyle.fill);
       } else {
-        var path = Path();
+        final path = Path();
 
         /// starting point
         path.moveTo(_radius * 2, 0);
@@ -214,7 +163,7 @@ class SpecialChatBubbleThree extends CustomPainter {
       }
     } else {
       if (tail) {
-        var path = Path();
+        final path = Path();
 
         /// starting point
         path.moveTo(_radius * 3, 0);
@@ -228,8 +177,7 @@ class SpecialChatBubbleThree extends CustomPainter {
         path.quadraticBezierTo(_radius * .7, h, 4, h);
 
         /// bottom-right tail curve 2
-        path.quadraticBezierTo(
-            _radius * 1, h, _radius * 1.3, h -1- _radius * 0.4);
+        path.quadraticBezierTo(_radius * 1, h, _radius * 1.3, h - 1 - _radius * 0.4);
 
         /// bottom-left bubble curve
         path.quadraticBezierTo(_radius * 1.5, h, _radius * 3, h);
@@ -252,7 +200,7 @@ class SpecialChatBubbleThree extends CustomPainter {
               ..color = color
               ..style = PaintingStyle.fill);
       } else {
-        var path = Path();
+        final path = Path();
 
         /// starting point
         path.moveTo(_radius * 3, 0);
@@ -288,7 +236,5 @@ class SpecialChatBubbleThree extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return true;
-  }
+  bool shouldRepaint(final CustomPainter oldDelegate) => true;
 }
