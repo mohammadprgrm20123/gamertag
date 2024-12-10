@@ -6,11 +6,11 @@ class MessageModel {
   final DateTime timeStamp;
   final DateTime? expirationTime;
 
-  MessageModel({
-    required this.uuid,
-    required this.senderId,
-    required this.text,
-    this.readMessage,
-    required this.timeStamp,
-    this.expirationTime});
+  MessageModel(
+      {required this.uuid,
+      required this.senderId,
+      required this.text,
+      required this.timeStamp,
+      this.readMessage,
+      this.expirationTime});
 }

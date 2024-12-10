@@ -17,39 +17,52 @@ class GetMessagesProvider
 
     final List<MessageModel> messages = [
       MessageModel(
-        senderId: userId!,
-        text: 'hello',
-        timeStamp: DateTime.now().copyWith(day: -1),
         uuid: const Uuid().v1(),
+        senderId: userId!,
+        text: "Hey! What's up?",
+        timeStamp: DateTime.now().copyWith(day: -3),
       ),
       MessageModel(
         senderId: userId!,
-        text: 'hello',
+        text: 'Not much, just chilling. What about you?',
         timeStamp: DateTime.now().copyWith(day: -2),
         uuid: const Uuid().v1(),
       ),
       MessageModel(
-        uuid: const Uuid().v1(),
         senderId: userId!,
-        text: 'hello',
-        timeStamp: DateTime.now().copyWith(day: -3),
+        text: "Same old, same old. Work's been crazy, but other than that, it's alright.",
+        timeStamp: DateTime.now().copyWith(day: -1),
+        uuid: const Uuid().v1(),
       ),
       MessageModel(
         uuid: const Uuid().v1(),
         senderId: '0',
-        text: 'hello',
-        timeStamp: DateTime.now().copyWith(hour: -2),
+        text: 'Yeah, work can be a drag sometimes. Hey, did you see that new movie that just came out?',
+        timeStamp: DateTime.now().copyWith(hour: -8),
+      ),
+      MessageModel(
+        uuid: const Uuid().v1(),
+        senderId: '0',
+        text: 'Yeah, work can be a drag sometimes. Hey, did you see that new movie that just came out?',
+        timeStamp: DateTime.now().copyWith(hour: -8),
       ),
       MessageModel(
         uuid: const Uuid().v1(),
         senderId: userId!,
-        text: 'hello',
+        text: 'Which one? The sci-fi one?',
         timeStamp: DateTime.now().copyWith(hour: -3),
       ),
       MessageModel(
         uuid: const Uuid().v1(),
         senderId: '0',
-        text: 'hello',
+        text: " Yeah, that one! I heard it's pretty good.",
+        timeStamp: DateTime.now().copyWith(hour: -2),
+      ),
+
+      MessageModel(
+        uuid: const Uuid().v1(),
+        senderId: '0',
+        text: "I haven't seen it yet, but I've been wanting to. Maybe we could check it out this weekend?",
         timeStamp: DateTime.now().copyWith(minute: -10),
       ),
       MessageModel(
@@ -61,134 +74,20 @@ class GetMessagesProvider
       MessageModel(
         uuid: const Uuid().v1(),
         senderId: userId!,
-        text: 'hello',
+        text: 'Sounds good to me! We could grab dinner beforehand.',
         timeStamp: DateTime.now().copyWith(minute: -14),
       ),
       MessageModel(
         uuid: const Uuid().v1(),
         senderId: '0',
-        text: 'hello',
+        text:"Perfect! I'll text you later to figure out the details.",
         timeStamp: DateTime.now().copyWith(minute: -15),
       ),
       MessageModel(
         uuid: const Uuid().v1(),
         senderId: '0',
-        text: 'hello',
+        text: 'Cool, see you then.',
         timeStamp: DateTime.now().copyWith(minute: -10),
-      ),
-      MessageModel(
-        uuid: const Uuid().v1(),
-        senderId: userId!,
-        text: 'hello',
-        timeStamp: DateTime.now().copyWith(minute: -12),
-      ),
-      MessageModel(
-        uuid: const Uuid().v1(),
-        senderId: userId!,
-        text: 'hello',
-        timeStamp: DateTime.now().copyWith(minute: -18),
-      ),
-      MessageModel(
-        uuid: const Uuid().v1(),
-        senderId: '0',
-        text: 'hello',
-        timeStamp: DateTime.now().copyWith(minute: -15),
-      ),
-      MessageModel(
-        uuid: const Uuid().v1(),
-        senderId: '0',
-        text: 'hello',
-        timeStamp: DateTime.now().copyWith(minute: -10),
-      ),
-      MessageModel(
-        uuid: const Uuid().v1(),
-        senderId: userId!,
-        text: 'hello',
-        timeStamp: DateTime.now().copyWith(minute: -12),
-      ),
-      MessageModel(
-        uuid: const Uuid().v1(),
-        senderId: userId!,
-        text: 'hello',
-        timeStamp: DateTime.now().copyWith(minute: -14),
-      ),
-      MessageModel(
-        uuid: const Uuid().v1(),
-        senderId: '0',
-        text: 'hello',
-        timeStamp: DateTime.now().copyWith(minute: -15),
-      ),
-      MessageModel(
-        uuid: const Uuid().v1(),
-        senderId: '0',
-        text: 'hello',
-        timeStamp: DateTime.now().copyWith(minute: -10),
-      ),
-      MessageModel(
-        uuid: const Uuid().v1(),
-        senderId: userId!,
-        text: 'hello',
-        timeStamp: DateTime.now().copyWith(minute: -12),
-      ),
-      MessageModel(
-        uuid: const Uuid().v1(),
-        senderId: userId!,
-        text: 'hello',
-        timeStamp: DateTime.now().copyWith(minute: -14),
-      ),
-      MessageModel(
-        uuid: const Uuid().v1(),
-        senderId: '0',
-        text: 'hello',
-        timeStamp: DateTime.now().copyWith(minute: -15),
-      ),
-      MessageModel(
-        uuid: const Uuid().v1(),
-        senderId: '0',
-        text: 'hello',
-        timeStamp: DateTime.now().copyWith(minute: -10),
-      ),
-      MessageModel(
-        uuid: const Uuid().v1(),
-        senderId: userId!,
-        text: 'hello',
-        timeStamp: DateTime.now().copyWith(minute: -12),
-      ),
-      MessageModel(
-        uuid: const Uuid().v1(),
-        senderId: '1',
-        text: 'hello',
-        timeStamp: DateTime.now().copyWith(minute: -14),
-      ),
-      MessageModel(
-        uuid: const Uuid().v1(),
-        senderId: '0',
-        text: 'hello',
-        timeStamp: DateTime.now().copyWith(minute: -15),
-      ),
-      MessageModel(
-        uuid: const Uuid().v1(),
-        senderId: userId!,
-        text: 'hello',
-        timeStamp: DateTime.now().copyWith(minute: -5),
-      ),
-      MessageModel(
-        uuid: const Uuid().v1(),
-        senderId: '0',
-        text: 'hello',
-        timeStamp: DateTime.now().copyWith(minute: -9),
-      ),
-      MessageModel(
-        uuid: const Uuid().v1(),
-        senderId: userId!,
-        text: 'hello',
-        timeStamp: DateTime.now().copyWith(minute: -7),
-      ),
-      MessageModel(
-        uuid: const Uuid().v1(),
-        senderId: '0',
-        text: 'hello',
-        timeStamp: DateTime.now().copyWith(hour: -8),
       ),
     ];
     sortMessagesByDateTime(messages);
@@ -198,6 +97,16 @@ class GetMessagesProvider
   void sortMessagesByDateTime(final List<MessageModel> messages) {
     messages.sort((final a, final b) => a.timeStamp.millisecondsSinceEpoch
         .compareTo(b.timeStamp.millisecondsSinceEpoch));
+  }
+
+  void sendMessage({required final  MessageModel model,required void Function() onCompleted}) {
+    final List<MessageModel>? models = state.valueOrNull;
+
+    if (models != null) {
+      models.add(model);
+      state = AsyncData([...models]);
+      onCompleted.call();
+    }
   }
 
   void deleteMessage({required final String uuid}) {

@@ -2,11 +2,12 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../infrastructure/theme/app_color.dart';
-import '../../infrastructure/utils/utils.dart';
 import '../model/message_model.dart';
 import '../provider/message_list_provider.dart';
+import 'widget/chat_input.dart';
 import 'widget/date_widget.dart';
 import 'widget/image_profile.dart';
 import 'widget/message_widget.dart';
@@ -24,10 +25,31 @@ class ChatScreen extends ConsumerStatefulWidget {
 }
 
 class _ChatScreenState extends ConsumerState<ChatScreen> {
+  TextEditingController messageTextController = TextEditingController();
+  late ScrollController scrollController = ScrollController();
+
   @override
   void initState() {
     ref.read(getAllMessagesProvider(widget.userId));
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    messageTextController.dispose();
+    super.dispose();
+  }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
+  Future<void> _scrollToEnd({required final double scrollExtent}) async {
+    await scrollController.animateTo(
+      scrollController.position.maxScrollExtent + scrollExtent,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.ease,
+    );
   }
 
   @override
@@ -65,10 +87,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       ref.watch(_getMessagesProvider).value ?? <MessageModel>[],
                       (final messageModel) => messageModel.timeStamp.day);
 
-                  return ListView.builder(
+                  return AnimatedList(
+                    controller: scrollController,
                     physics: const BouncingScrollPhysics(),
-                    itemCount: list.values.length,
-                    itemBuilder: (final c, final index) {
+                    initialItemCount: list.values.length,
+                    itemBuilder: (final c, final index,final anim) {
                       final dayMessages = list.values.toList()[index];
                       final date = dayMessages.first.timeStamp;
                       return Column(
@@ -77,18 +100,27 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                             dateTime: date,
                           ),
                           ...dayMessages.mapIndexed(
-                              (final index, final e) => MessageWidget(
-                                    isSender: e.senderId == '0',
-                                    color: e.senderId == '0'
-                                        ? AppColor.primeryColor
-                                        : AppColor.appBarBackground,
-                                    text: e.text,
-                                    tail: !((index != dayMessages.length - 1) &&
-                                        dayMessages.iterator.moveNext() &&
-                                        dayMessages[index + 1].senderId ==
-                                            e.senderId),
-                                    onDeleted: () {},
-                                  ))
+                              (final index, final e) => SizeTransition(
+                                sizeFactor: anim,
+                                child: MessageWidget(
+                                  expiretionTime: e.expirationTime,
+                                  deleteAble: e.senderId == '0',
+                                      isSender: e.senderId == '0',
+                                      color: e.senderId == '0'
+                                          ? AppColor.primeryColor
+                                          : AppColor.appBarBackground,
+                                      text: e.text,
+                                      tail: !((index != dayMessages.length - 1) &&
+                                          dayMessages.iterator.moveNext() &&
+                                          dayMessages[index + 1].senderId ==
+                                              e.senderId),
+                                      onDeleted: () {
+                                        ref
+                                            .read(_getMessagesProvider.notifier)
+                                            .deleteMessage(uuid: e.uuid);
+                                      },
+                                    ),
+                              ))
                         ],
                       );
                     },
@@ -96,43 +128,22 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 },
               ),
             ),
-            DecoratedBox(
-              decoration: const BoxDecoration(
-                color: Colors.white,
-              ),
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
-                child: Row(
-                  children: [
-                    SvgPicture.asset(
-                      'assets/images/stopwatch.svg',
-                      height: 25,
-                      width: 25,
-                    ),
-                    Utils.smallGap,
-                    Expanded(
-                        child: TextFormField(
-                      decoration: InputDecoration(
-                          suffixIcon: Padding(
-                        padding: const EdgeInsets.all(6.0),
-                        child: SizedBox(
-                          height: 25,
-                          width: 25,
-                          child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                  color: AppColor.primeryColor,
-                                  shape: BoxShape.circle),
-                              child: Center(
-                                  child: SvgPicture.asset(
-                                      'assets/images/arrow_up.svg'))),
-                        ),
-                      )),
-                    ))
-                  ],
-                ),
-              ),
-            )
+            ChatInput(
+              onClickInput: () {
+                print('ccccccc');
+                _scrollToEnd(scrollExtent: 500);
+              },
+              onSendMessage: (final value) {
+                ref.read(_getMessagesProvider.notifier).sendMessage(
+                    onCompleted: () => _scrollToEnd(scrollExtent: 200),
+                    model: MessageModel(
+                        uuid: const Uuid().v1(),
+                        senderId: '0',
+                        text: value,
+                        expirationTime: DateTime.now().add(Duration(minutes: 1)),
+                        timeStamp: DateTime.now()));
+              },
+            ),
           ],
         ),
       );
