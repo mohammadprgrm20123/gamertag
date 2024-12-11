@@ -1,16 +1,13 @@
-# gamertag_3
+## Project Name: gamertag_3 
 
-A new Flutter project.
 
-## Getting Started
+## Flutter SDK Version:
+Requires a minimum Flutter SDK version of 3.3.3 but not yet compatible with 4.0.0.
+## Dependencies  
+Lists the required packages for your app to function, including flutter (the core Flutter framework), cupertino_icons (for iOS-style icons), swipeable_tile (for creating swipeable tiles), flutter_svg (for parsing and displaying SVG vector graphics), gap (for spacing widgets), jiffy (for date and time manipulation), riverpod (for state management), flutter_riverpod (a Riverpod integration for Flutter), and uuid (for generating Universally Unique Identifiers).
 
-This project is a starting point for a Flutter application.
+## Flutter App Configuration:
+Specifies that the app uses Material Design and includes a list of image assets located in the assets/images directory.
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![Uploading Screenshot_1733940004.png…]()
