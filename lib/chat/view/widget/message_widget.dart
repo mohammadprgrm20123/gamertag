@@ -29,37 +29,61 @@ class MessageWidget extends StatefulWidget {
     this.constraints,
     this.color,
     this.tail = true,
-    this.textStyle = const TextStyle(
-        color: Colors.white, fontSize: 14, fontWeight: FontWeight.w400),
+    this.textStyle = const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w400),
   });
 
   @override
   State<MessageWidget> createState() => _MessageWidgetState();
 }
 
-class _MessageWidgetState extends State<MessageWidget> {
+class _MessageWidgetState extends State<MessageWidget> with TickerProviderStateMixin {
   late Timer timer;
+  ValueNotifier<bool> hideMessage = ValueNotifier(false);
+  late AnimationController _controller;
 
   @override
   void initState() {
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
     if (widget.expiretionTime != null) {
-      timer = Timer.periodic(const Duration(seconds: 1), (tick) {
-        print(tick.tick);
-        if (tick.tick == 5) {
-          widget.onDeleted();
+      timer = Timer.periodic(const Duration(seconds: 1), (final tick) async {
+        if (widget.expiretionTime!.difference(DateTime.now()).inSeconds <= 0) {
+          await _controller.forward(from: 0).then((final _) async {
+            widget.onDeleted();
+          });
           timer.cancel();
         }
       });
-      super.initState();
     }
+    super.initState();
+  }
+
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
   }
 
   @override
-  Widget build(final BuildContext context) => widget.deleteAble
-      ? SwipeableTile(
+  void dispose() {
+    _controller.dispose(); // Dispose the controller unconditionally
+    super.dispose();
+  }
+
+  @override
+  Widget build(final BuildContext context) =>
+      widget.deleteAble
+          ? SizeTransition(
+        sizeFactor: Tween<double>(
+          begin: 1,
+          end: 0,
+        ).animate(_controller),
+        child: SwipeableTile(
           key: UniqueKey(),
           isElevated: false,
-          swipeThreshold: .8,
           confirmSwipe: (final direction) async {
             if (direction == SwipeDirection.startToEnd) {
               return true;
@@ -78,10 +102,7 @@ class _MessageWidgetState extends State<MessageWidget> {
                     Utils.mediumGap,
                     AppText(
                       'Delete',
-                      style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold),
+                      style: TextStyle(color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -94,34 +115,31 @@ class _MessageWidgetState extends State<MessageWidget> {
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 2),
             child: Align(
-              alignment:
-                  widget.isSender ? Alignment.topRight : Alignment.topLeft,
+              alignment: widget.isSender ? Alignment.topRight : Alignment.topLeft,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 child: CustomPaint(
                   painter: MessageWidgetCustomPaint(
+                    textLength: widget.text.length,
                       color: widget.color ?? AppColor.appBarBackground,
-                      alignment: widget.isSender
-                          ? Alignment.topRight
-                          : Alignment.topLeft,
+                      alignment: widget.isSender ? Alignment.topRight : Alignment.topLeft,
                       tail: widget.tail),
                   child: Container(
                     constraints: widget.constraints ??
                         BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width * .7,
+                          maxWidth: MediaQuery
+                              .of(context)
+                              .size
+                              .width * .7,
                         ),
-                    margin: widget.isSender
-                        ? const EdgeInsets.fromLTRB(7, 7, 17, 7)
-                        : const EdgeInsets.fromLTRB(17, 7, 7, 7),
+                    margin: widget.isSender ? const EdgeInsets.fromLTRB(7, 7, 17, 7) : const EdgeInsets.fromLTRB(17, 7, 7, 7),
                     child: Stack(
                       children: <Widget>[
                         Padding(
                           padding: const EdgeInsets.only(left: 4, right: 4),
                           child: Text(
                             widget.text,
-                            style: !widget.isSender
-                                ? widget.textStyle.copyWith(color: Colors.black)
-                                : widget.textStyle,
+                            style: !widget.isSender ? widget.textStyle.copyWith(color: Colors.black) : widget.textStyle,
                             textAlign: TextAlign.left,
                           ),
                         ),
@@ -132,45 +150,42 @@ class _MessageWidgetState extends State<MessageWidget> {
               ),
             ),
           ),
-        )
-      : Padding(
-          padding: const EdgeInsets.symmetric(vertical: 2),
-          child: Align(
-            alignment: widget.isSender ? Alignment.topRight : Alignment.topLeft,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              child: CustomPaint(
-                painter: MessageWidgetCustomPaint(
-                    color: widget.color ?? AppColor.appBarBackground,
-                    alignment: widget.isSender
-                        ? Alignment.topRight
-                        : Alignment.topLeft,
-                    tail: widget.tail),
-                child: Container(
-                  constraints: widget.constraints ??
-                      BoxConstraints(
-                        maxWidth: MediaQuery.of(context).size.width * .7,
+        ),
+      )
+          : Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Align(
+          alignment: widget.isSender ? Alignment.topRight : Alignment.topLeft,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            child: CustomPaint(
+              painter: MessageWidgetCustomPaint(
+                textLength: widget.text.length,
+                  color: widget.color ?? AppColor.appBarBackground, alignment: widget.isSender ? Alignment.topRight : Alignment.topLeft, tail: widget.tail),
+              child: Container(
+                constraints: widget.constraints ??
+                    BoxConstraints(
+                      maxWidth: MediaQuery
+                          .of(context)
+                          .size
+                          .width * .7,
+                    ),
+                margin: widget.isSender ? const EdgeInsets.fromLTRB(7, 7, 17, 7) : const EdgeInsets.fromLTRB(17, 7, 7, 7),
+                child: Stack(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4, right: 4),
+                      child: Text(
+                        widget.text,
+                        style: !widget.isSender ? widget.textStyle.copyWith(color: Colors.black) : widget.textStyle,
+                        textAlign: TextAlign.left,
                       ),
-                  margin: widget.isSender
-                      ? const EdgeInsets.fromLTRB(7, 7, 17, 7)
-                      : const EdgeInsets.fromLTRB(17, 7, 7, 7),
-                  child: Stack(
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(left: 4, right: 4),
-                        child: Text(
-                          widget.text,
-                          style: !widget.isSender
-                              ? widget.textStyle.copyWith(color: Colors.black)
-                              : widget.textStyle,
-                          textAlign: TextAlign.left,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
-        );
+        ),
+      );
 }

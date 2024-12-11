@@ -102,7 +102,7 @@ class AppTheme {
         ),
         appBarTheme: AppBarTheme(
           iconTheme: IconThemeData(color: AppColor.primeryColor),
-          backgroundColor: AppColor.appBarBackground,
+          backgroundColor: AppColor.appBarBackground.withOpacity(.7),
         ),
         useMaterial3: true,
       );

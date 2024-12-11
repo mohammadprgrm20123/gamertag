@@ -7,6 +7,7 @@ import 'package:uuid/uuid.dart';
 import '../../infrastructure/theme/app_color.dart';
 import '../model/message_model.dart';
 import '../provider/message_list_provider.dart';
+import '../provider/message_with_timer_provider.dart';
 import 'widget/chat_input.dart';
 import 'widget/date_widget.dart';
 import 'widget/image_profile.dart';
@@ -39,6 +40,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     messageTextController.dispose();
     super.dispose();
   }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -83,15 +85,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             Expanded(
               child: Consumer(
                 builder: (final context, final ref, final child) {
-                  final list = groupBy(
-                      ref.watch(_getMessagesProvider).value ?? <MessageModel>[],
-                      (final messageModel) => messageModel.timeStamp.day);
+                  final list = groupBy(ref.watch(_getMessagesProvider).value ?? <MessageModel>[], (final messageModel) => messageModel.timeStamp.day);
 
-                  return AnimatedList(
+                  return ListView.builder(
                     controller: scrollController,
                     physics: const BouncingScrollPhysics(),
-                    initialItemCount: list.values.length,
-                    itemBuilder: (final c, final index,final anim) {
+                    itemCount: list.values.length,
+                    itemBuilder: (final c, final index) {
                       final dayMessages = list.values.toList()[index];
                       final date = dayMessages.first.timeStamp;
                       return Column(
@@ -99,27 +99,21 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           MessageDateWidget(
                             dateTime: date,
                           ),
-                          ...dayMessages.mapIndexed(
-                              (final index, final e) => SizeTransition(
-                                sizeFactor: anim,
-                                child: MessageWidget(
-                                  expiretionTime: e.expirationTime,
-                                  deleteAble: e.senderId == '0',
-                                      isSender: e.senderId == '0',
-                                      color: e.senderId == '0'
-                                          ? AppColor.primeryColor
-                                          : AppColor.appBarBackground,
-                                      text: e.text,
-                                      tail: !((index != dayMessages.length - 1) &&
-                                          dayMessages.iterator.moveNext() &&
-                                          dayMessages[index + 1].senderId ==
-                                              e.senderId),
-                                      onDeleted: () {
-                                        ref
-                                            .read(_getMessagesProvider.notifier)
-                                            .deleteMessage(uuid: e.uuid);
-                                      },
-                                    ),
+                          ...dayMessages.mapIndexed((final index, final e) => MessageWidget(
+                                key: UniqueKey(),
+                                expiretionTime: e.expirationTime,
+                                deleteAble: e.senderId == '0',
+                                isSender: e.senderId == '0',
+                                color: e.expirationTime != null
+                                    ? AppColor.accent
+                                    : e.senderId == '0'
+                                        ? AppColor.primeryColor
+                                        : AppColor.appBarBackground,
+                                text: e.text,
+                                tail: !((index != dayMessages.length - 1) && dayMessages.iterator.moveNext() && dayMessages[index + 1].senderId == e.senderId),
+                                onDeleted: () {
+                                  ref.read(_getMessagesProvider.notifier).deleteMessage(uuid: e.uuid);
+                                },
                               ))
                         ],
                       );
@@ -130,17 +124,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             ),
             ChatInput(
               onClickInput: () {
-                print('ccccccc');
-                _scrollToEnd(scrollExtent: 500);
+                _scrollToEnd(scrollExtent: 400);
               },
               onSendMessage: (final value) {
                 ref.read(_getMessagesProvider.notifier).sendMessage(
-                    onCompleted: () => _scrollToEnd(scrollExtent: 200),
+                    onCompleted: () => _scrollToEnd(scrollExtent: 40),
                     model: MessageModel(
                         uuid: const Uuid().v1(),
                         senderId: '0',
                         text: value,
-                        expirationTime: DateTime.now().add(Duration(minutes: 1)),
+                        expirationTime: ref.read(messageWithTimerProvider) ? DateTime.now().add(const Duration(seconds: 3)) : null,
                         timeStamp: DateTime.now()));
               },
             ),
@@ -148,6 +141,5 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         ),
       );
 
-  NotifierFamilyProvider<GetMessagesProvider, AsyncValue<List<MessageModel>>,
-      String> get _getMessagesProvider => getAllMessagesProvider(widget.userId);
+  NotifierFamilyProvider<GetMessagesProvider, AsyncValue<List<MessageModel>>, String> get _getMessagesProvider => getAllMessagesProvider(widget.userId);
 }

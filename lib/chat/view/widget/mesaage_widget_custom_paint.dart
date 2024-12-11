@@ -3,22 +3,29 @@ import 'package:flutter/material.dart';
 
 class MessageWidgetCustomPaint extends CustomPainter {
   final Color color;
+  final int textLength;
   final Alignment alignment;
   final bool tail;
 
   MessageWidgetCustomPaint({
     required this.color,
+    required this.textLength,
     required this.alignment,
     required this.tail,
   });
 
-  final double _radius = 12.0;
+  double _radius = 10.0;
 
   @override
   void paint(final Canvas canvas, final Size size) {
     final h = size.height;
     final w = size.width;
     if (alignment == Alignment.topRight) {
+
+      if(textLength<5){
+        _radius = 8;
+      }
+
       if (tail) {
         final path = Path();
 

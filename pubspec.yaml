@@ -71,6 +71,7 @@ flutter:
      - assets/images/image1.png
      - assets/images/stopwatch.svg
      - assets/images/arrow_up.svg
+     - assets/images/enable_stopwatch.svg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
