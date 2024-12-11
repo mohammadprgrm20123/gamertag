@@ -106,6 +106,7 @@ class _ChatInputState extends ConsumerState<ChatInput> {
                           onTap: () {
                             final messageText = messageTextController.text;
                             if (messageText.isNotEmpty) {
+                              ref.read(messageSenderButtonProvider.notifier).state = false;
                               widget.onSendMessage.call(messageText);
                               messageTextController.clear();
                             }
